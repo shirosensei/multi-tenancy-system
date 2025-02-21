@@ -8,12 +8,25 @@ export const createPost = async (
     { id: string; title: string; tenantId: string } | { error: string }
   >
 ): Promise<void> => {
-  const { title } = req.body;
+  const { title }: any = req.body;
 
   try {
+
+    // Ensure tenant and tenant.domain exist
+    if (!req.tenant || !req.tenant.domain) {
+       res.status(400).json({ error: 'Tenant domain is missing' });
+       return
+    }
+
+    // const tenantId = req.tenant!.domain;
+
     const post = await prisma.post.create({
-      data: { title, tenantId: req.tenant!.subdomain },
+      data: { title, tenantId: req.tenant.domain },
+      // data: { title, tenantId: req.tenant!.domain },
     });
+
+  
+
     res.json(post);
   } catch (error) {
     res.status(500).json({ error: "Failed to create post" });
@@ -25,8 +38,16 @@ export const getPosts = async (
   res: Response<Array<{ id: string; title: string }> | { error: string }>
 ) => {
   try {
+
+      // Ensure tenant and tenant.domain exist
+      if (!req.tenant || !req.tenant.domain) {
+        res.status(400).json({ error: 'Tenant domain is missing' });
+        return
+     }
+
+     
     const posts = await prisma.post.findMany({
-      where: { tenantId: req.tenant!.subdomain },
+      where: { tenantId: req.tenant!.domain },
       select: { id: true, title: true },
     });
     res.json(posts);

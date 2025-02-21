@@ -15,18 +15,26 @@ const prisma = new PrismaClient().$extends({
         const ctx  = (this as unknown as { context: Context });
 
         // Ensure context exists
-        if (!ctx.context?.tenantId || typeof ctx.context.tenantId !== 'string') {
-          throw new Error('Tenant ID is missing in context');
+        if (!ctx.context?.tenantId) {
+          throw new Error('Tenant ID is missing in context!');
         }
 
         // Add tenantId to where clause for read/update/delete operations
         if (['findUnique', 'findMany', 'update', 'delete'].includes(operation)) {
-          args.where = { ...args.where, tenantId: ctx.context.tenantId };
+            // Only modify `args.where` if it exists
+
+          if (args?.where && typeof args.where === 'object') {
+            args.where = { ...args.where, tenantId: ctx.context.tenantId };
+        
+          } else {
+            args.where = { tenantId: ctx.context.tenantId };
+          }
+         
         }
 
         // Add tenantId to data for create operations
         if (['create', 'createMany'].includes(operation)) {
-          if (args.data && typeof args.data === 'object') {
+          if (args?.data && typeof args.data === 'object') {
             args.data = { ...args.data, tenantId: ctx.context.tenantId };
           }
         }

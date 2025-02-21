@@ -8,13 +8,16 @@ export interface Tenant {
   updatedAt?: Date;
 }
 
-// Extend Express Request Type
 declare global {
   namespace Express {
     interface Request {
       user?: Record<string, any>;
       tenant?: Tenant;
     }
+    
+    interface Response {
+      json(data: any): Response;
+    }      
   }
 }
 

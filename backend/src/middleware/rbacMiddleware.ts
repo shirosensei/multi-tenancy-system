@@ -1,8 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 
 
-
-type Role = 'admin' | 'guest' | 'editor' | 'viewer';
+type Role = 'admin' | 'editor' | 'viewer' | 'guest';
 
 const requireRole = (requiredRole: Role) => {
   return (req: Request, res: Response, next: NextFunction) => {

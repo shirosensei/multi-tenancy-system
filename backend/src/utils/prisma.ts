@@ -16,7 +16,9 @@ const prisma = new PrismaClient().$extends({
 
         // Ensure context exists
         if (!ctx.context?.tenantId) {
-          throw new Error('Tenant ID is missing in context!');
+         console.log('TenantId is missing in context');
+         throw new Error('TenantId is missing in context');
+        //  return query(args);
         }
 
         // Add tenantId to where clause for read/update/delete operations

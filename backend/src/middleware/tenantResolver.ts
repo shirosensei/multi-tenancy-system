@@ -1,42 +1,45 @@
 import { Request, Response, NextFunction } from 'express';
-
-interface Tenant {
-    subdomain: string;
-}
-
-export interface TenantRequest extends Request {
-    tenant?: Tenant;
-}
+import prisma from '../utils/prisma';
 
 
 
-const resolveTenant = (req: TenantRequest): Tenant | null => {
-    const host = req.headers.host;
-    
-    if (!host) return null;
-    
-
-    const subdomain = host.split('.')[0];
-
-    // Check if host does not contain subdomain OR alphanumeric
-    if (!subdomain || !/^[a-zA-Z0-9-]+$/.test(subdomain)) return null;
-
-    req.tenant = { subdomain };
-
-    return req.tenant;
-}
-
-
-
-
-export const tenantResolver = async (req: TenantRequest, res: Response, next: NextFunction): Promise<void>  => {
-    const tenant = resolveTenant(req);
-
-    if (!tenant) {
-        res.status(400).json({ error: 'Invalid or missing tenant subdomain' });
-        return;
+ const tenantResolver = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) => {
+    try {
+      const host = req.headers.host;
+      if (!host) {
+         res.status(400).json({ error: 'Host header required' });
+         return
+      }
+  
+      const subdomain = host.split('.')[0];
+      if (!subdomain) {
+         res.status(400).json({ error: 'Invalid subdomain format' });
+         return
+      }
+  
+      const tenant = await prisma.tenant.findUnique({
+        where: { domain: subdomain, id: '' },
+        select: { id: true, name: true, domain: true, createdAt: true, updatedAt: true }
+      });
+  
+      if (!tenant) {
+         res.status(404).json({ error: 'Tenant not found' });
+         return
+      }
+      
+      // Attach tenant to request and Prisma context
+      req.tenant = tenant;
+  
+    //   on to the next middleware
+      next();
+    } catch (error) {
+      next(error);
     }
-    
-    req.tenant = tenant;
-    next();
-}
+  };
+
+
+  export default tenantResolver; 

@@ -1,9 +1,9 @@
 import { Request, Response } from "express";
 import prisma from "../utils/prisma"; // Local Prisma client instance
-import { TenantRequest } from "../middleware/tenantResolver";
+
 
 export const createPost = async (
-  req: TenantRequest,
+  req: Request,
   res: Response<
     { id: string; title: string; tenantId: string } | { error: string }
   >
@@ -21,7 +21,7 @@ export const createPost = async (
 };
 
 export const getPosts = async (
-  req: TenantRequest,
+  req: Request,
   res: Response<Array<{ id: string; title: string }> | { error: string }>
 ) => {
   try {

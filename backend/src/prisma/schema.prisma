@@ -9,26 +9,48 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-
 generator client {
   provider = "prisma-client-js"
 }
 
-
-model Post {
+model Tenant {
   id        String   @id @default(auto()) @map("_id") @db.ObjectId
-  title     String
-  content   String
-  tenantId  String   // Tenant isolation field
+  name      String
+  domain    String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
 
 model User {
-  id String @id @default(auto()) @map("_id") @db.ObjectId
-  email String @unique
-  name String?
-  gender String
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  email     String   @unique
+  user      String   @unique
+  name      String?
+  tenantId  String // Tenant isolation field
+  roleId    String   @db.ObjectId // Role management
+  role      Role     @relation(fields: [roleId], references: [id])
+  gender    String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([tenantId, email])
 }
 
+model Role {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  name      String   @unique
+  users     User[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
 
+model Post {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  title     String
+  content   String?
+  tenantId  String // Tenant isolation field
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([tenantId, createdAt])
+}

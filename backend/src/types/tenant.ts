@@ -6,3 +6,6 @@ export interface Tenant {
     createdAt?: Date;
     updatedAt?: Date;
   }
+
+  
+  export { }

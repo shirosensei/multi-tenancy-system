@@ -6,8 +6,6 @@ interface TenantRequestBody {
     subdomain: string;
 }
 
-//   Validate interface
-
 
 export const createTenant = async (req: Request<TenantRequestBody>, res: Response<{ id: string; name: string } | { error: string }>): Promise<void> => {
     const { name, subdomain } = req.body;
@@ -15,7 +13,7 @@ export const createTenant = async (req: Request<TenantRequestBody>, res: Respons
     try {
 
         const existingTenant = await prisma.tenant.findUnique({
-            where: { subdomain },
+            where: { id : subdomain },
         });
 
         if (existingTenant) {
@@ -28,7 +26,7 @@ export const createTenant = async (req: Request<TenantRequestBody>, res: Respons
         const tenant = await prisma.tenant.create({
             data: {
                 name,
-                subdomain,
+                domain: subdomain,
                 createdAt: new Date(),
             },
         });

@@ -20,38 +20,36 @@ A scalable multi-tenant system application utilizing role-based access control (
 **Cloud**: Docker
 
 
-backend/
-└── src/
-├── controllers/
-├── middlewares/
-├── prisma/
-│ └── schema.prisma
-├── routes/
-├── types/
-├── utils/
-└── app.ts
-frontend/
-└── src/
-├── components/
-│ ├── subscription/
-│ ├── userActivity/
-│ ├── sidebar/
-│ ├── tenantForm/
-│ ├── tenantList/
-│ └── tenantMetrics/
-├── context/
-├── layout/
-├── middleware/
-├── pages/
-├── api/
-├── App.jsx
-├── main.jsx
+backend/<br>
+└── src/<br>
+├── controllers/<br>
+├── middlewares/<br>
+├── prisma/<br>
+├── routes/<br>
+├── types/<br>
+├── utils/<br>
+└── app.ts<br>
+frontend/<br>
+└── src/<br>
+├── components/<br>
+│ ├── subscription/<br>
+│ ├── userActivity/<br>
+│ ├── sidebar/<br>
+│ ├── tenantForm/<br>
+│ ├── tenantList/<br>
+│ └── tenantMetrics/<br>
+├── context/<br>
+├── layout/<br>
+├── middleware/<br>
+├── pages/<br>
+├── api/<br>
+├── App.jsx<br>
+├── main.jsx<br>
 └── theme.js
 
 ## Setup Instructions
 
 - Clone the repository and navigate to both `frontend/` and `backend/` directories to set up both parts.
-- 
 
 ## Running the Application
 

@@ -1,85 +1,57 @@
-# Multi-Tenant Application System
+<h1 align="center">Multi-Tenant Application System</h1>
+<p align="center"><a href="#project-description">Project Description</a> - <a href="#key-features">Key Features</a> - <a href="#technology-stack">Tech Stack</a></p>
+
+## Project Description
 
 A scalable multi-tenant system application utilizing role-based access control (RBAC), with MongoDB sharding and a tenant management dashboard.
 
-## Features
+## Key Features
 
-- Multi-Tenant Architecture
-- RBAC middleware for secure role management
-- MongoDB Sharding for scalability
-- Tenant-specific dashboard and subscription management
-- User activity tracking
+*   Multi-Tenant Architecture
+*   RBAC middleware for secure role management
+*   MongoDB Sharding for scalability
+*   Tenant-specific dashboard and subscription management
+*   User activity tracking
 
-## Technologies
+## Tech Stack
 
-React + Vite
-Express
-Prisma
-Mongodb
-Material UI
-Tailwind CSS
-Node.js
-JWT
+**Frontend**: React + Vite, Tailwind CSS, Material UI  
+**Backend**: Node.js, Express, MongoDB, Prisma, JWT  
+**Cloud**: Docker
+
 
 backend/
 └── src/
-    ├── controllers/
-    │   ├── postController.js
-    │   ├── tenantAuthController.js
-    │   ├── tenantController.js
-    │   └── userController.js
-    ├── middlewares/
-    │   ├── rbacMiddleware.js
-    │   ├── identifyTenant.js
-    │   ├── identifyTenantByDomain.js
-    │   └── tenantMiddleware.js
-    ├── prisma/
-    │   └── schema.prisma
-    ├── routes/
-    │   ├── tenantRoutes.js
-    │   └── userRoutes.js
-    ├── types/
-    │   └── tenantTypes.js
-    ├── utils/
-    │   └── helpers.js
-    └── server.js
-
+├── controllers/
+├── middlewares/
+├── prisma/
+│ └── schema.prisma
+├── routes/
+├── types/
+├── utils/
+└── app.ts
 frontend/
 └── src/
-    ├── components/
-    │   ├── subscription/
-    │   ├── userActivity/
-    │   ├── sidebar/
-    │   ├── tenantForm/
-    │   ├── tenantList/
-    │   └── tenantMetrics/
-    ├── context/
-    │   ├── authContext.js
-    │   ├── tenantContext.js
-    │   └── userContext.js
-    ├── layout/
-    │   ├── Sidebar.js
-    │   └── Navbar.js
-    ├── middleware/
-    │   └── authorize.js
-    ├── pages/
-    │   ├── dashboard.js
-    │   ├── login.js
-    │   ├── signup.js
-    │   ├── subscription.js
-    │   ├── tenantDetail.js
-    │   ├── userActivityPage.js
-    │   └── service.js
-    ├── api/
-    │   └── apiService.js
-    ├── App.js
-    ├── main.js
-    └── theme.js
+├── components/
+│ ├── subscription/
+│ ├── userActivity/
+│ ├── sidebar/
+│ ├── tenantForm/
+│ ├── tenantList/
+│ └── tenantMetrics/
+├── context/
+├── layout/
+├── middleware/
+├── pages/
+├── api/
+├── App.jsx
+├── main.jsx
+└── theme.js
 
 ## Setup Instructions
 
 - Clone the repository and navigate to both `frontend/` and `backend/` directories to set up both parts.
-- Follow the setup instructions in both the `frontend/README.md` and `backend/README.md` for installation and configuration.
+- 
 
 ## Running the Application
 

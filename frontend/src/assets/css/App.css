@@ -1,0 +1,29 @@
+/* Override Material UI Input styles */
+.MuiOutlinedInput-root {
+  border-color: transparent !important; /* To allow Tailwind to handle border styles */
+}
+
+.MuiOutlinedInput-root:hover {
+  border-color: #6e6e6e !important; /* Hover border color */
+}
+
+.MuiOutlinedInput-root.Mui-focused {
+  border-color: #9d8d6c !important; /* Focus border color */
+}
+
+.MuiInputLabel-root {
+  color: #9d8d6c !important; /* Default label color */
+}
+
+.MuiInputLabel-root.Mui-focused {
+  color: #9d8d6c !important; /* Focused label color */
+}
+
+.MuiOutlinedInput-input {
+  color: white !important; /* White input text */
+}
+
+/* Add Tailwind hover and focus colors */
+.MuiInputLabel-root:hover {
+  color: #6e6e6e !important; /* Hover label color */
+}

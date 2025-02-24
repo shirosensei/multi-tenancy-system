@@ -1,27 +1,40 @@
 import winston from 'winston';
+import path from 'path';
+import fs from 'fs';
 
-const { combine, timestamp, printf, colorize } = winston.format;
-
-// Define log format
-const logFormat = printf(({ level, message, timestamp }) => {
-  return `${timestamp} [${level}]: ${message}`;
-});
+// Ensure the logs directory exists
+const logsDir = path.join(__dirname, '../../logs');
+if (!fs.existsSync(logsDir)) {
+  fs.mkdirSync(logsDir);
+}
 
 // Create a logger instance
 const logger = winston.createLogger({
-  level: 'info', // Minimum log level to display
-  format: combine(
-    colorize(), // Add colors to logs
-    timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }), // Add timestamp
-    logFormat // Apply custom log format
+  level: 'info', // Log level (info, warn, error, etc.)
+  format: winston.format.combine(
+    winston.format.timestamp(), // Add timestamp
+    winston.format.json() // Log in JSON format
   ),
   transports: [
-    // Log to the console
-    new winston.transports.Console(),
-    // Log to a file
-    new winston.transports.File({ filename: 'logs/error.log', level: 'error' }),
-    new winston.transports.File({ filename: 'logs/combined.log' }),
+    // Write all logs to a file
+    new winston.transports.File({
+      filename: path.join(logsDir, 'app.log'), // Log file path
+    }),
   ],
 });
+
+// If not in production, also log to the console
+if (process.env.NODE_ENV !== 'production') {
+  logger.add(
+    new winston.transports.Console({
+      format: winston.format.combine(
+        
+        winston.format.colorize(), // Add colors to console logs
+
+        winston.format.simple() // Simple format for console
+      ),
+    })
+  );
+}
 
 export default logger;

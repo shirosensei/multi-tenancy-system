@@ -1,15 +1,18 @@
 import { Request, Response, NextFunction } from 'express';
-import prisma from '../utils/prisma';
+import prisma, { Context } from '../utils/prisma';
+import { TypedRequestBody, TypedRequestParams, TypedRequestQuery } from '../types/express'
+import logger from '../utils/logger';
+
+declare module 'express' {
+  interface  Request {
+    context?: Context
+  }
+}
 
 
-const tenantResolver = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
+const tenantResolver = async  <T>(req: TypedRequestBody<T> | TypedRequestQuery<T> | TypedRequestParams<T>, res: Response, next: NextFunction) => {
   try {
-    let tenantId: string | undefined = (req as any).tenantId;
-    let decoded: any = (req as any).userId;
+    let tenantId: string | undefined = req.tenant?.id;
 
 
 
@@ -17,34 +20,43 @@ const tenantResolver = async (
       const host = req.headers.host;
 
       if (!host) {
-        res.status(400).json({ error: 'Host header required' });
-        return
+        logger.warn('Host header is missing');
+        throw new Error('Host header is required');
       }
 
 
       const subdomain = host.split('.')[0];
       if (!subdomain) {
-        res.status(400).json({ error: 'Invalid subdomain format' });
-        return
+        logger.warn("Invalid subdomain format");
+        throw new Error('Invalid subdomain format');
       }
 
-      const tenant = await prisma.tenant.findUnique({
+      const tenant = await prisma.tenant.findFirst({
         where: { domain: subdomain },
-        select: { id: true }
+        select: { id: true, name: true, domain: true, email: true, createdAt: true, updatedAt: true, password: true },
       });
 
       if (!tenant) {
-        res.status(404).json({ error: 'Tenant not found' });
-        return
+        logger.warn("Tenant not found");
+        throw new Error('Tenant not found');
       }
 
-      tenantId = tenant.id;
+      req.tenant = {
+        ...tenant,
+        id: tenant.id,
+        name: tenant.name,
+        email: tenant.email, 
+        domain: tenant.domain,
+      };
 
-      (req as any).userId = decoded.userId;
-      (req as any).tenantId = decoded.tenantId;
+
+      tenantId = tenant.id;
     }
 
-    //   on to the next middleware
+    // Attach tenantId to context
+    req.context = { tenantId };
+
+    // on to the next middleware
     next();
   } catch (error) {
     next(error);

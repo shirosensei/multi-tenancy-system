@@ -1,46 +1,46 @@
-import React, { createContext, useContext, useEffect, useState } from 'react';
+import React, { createContext, useState, useContext } from 'react';
 import PropTypes from 'prop-types';
-import { api } from '../services/api';
+import { DUMMY_USERS } from "../data/dummyUsers";
 
+// Create TenantContext
 const TenantContext = createContext();
 
 export const TenantProvider = ({ children }) => {
   const [tenants, setTenants] = useState([]);
-  const [initialized, setInitialized] = useState(false); 
+  const [tenant, setTenant] = useState(null);
+  const [loading, setLoading] = useState(false);
 
-  const refreshTenants = async () => {
+  const refreshTenants = async (email, password) => {
     try {
-        const response = await api.get('/tenants');
-        setTenants(response.data);
-      } catch (error) {
-        console.error('Failed to fetch tenants:', error);
+      const foundTenant = DUMMY_USERS.find(user => user.email === email && user.password === password);
+
+      if (foundTenant) {
+        setTenants([foundTenant]);
+        setTenant(foundTenant); // Set the tenant
       }
+    } catch (error) {
+      console.error('Failed to fetch tenants:', error);
+    }
   };
 
-  useEffect(() => {
-    if(!initialized) {
-      refreshTenants();
-      setInitialized(true);
-    }
-    
-  }, [initialized]);
-
   return (
-    <TenantContext.Provider value={{ tenants, refreshTenants }}>
+    <TenantContext.Provider value={{ tenants, tenant, refreshTenants, loading }}>
       {children}
     </TenantContext.Provider>
   );
 };
 
-// const useTenants = () => {
-//     const context = useContext(TenantContext);
-//     if (!context) {
-//         throw new Error('useTenants must be used within a TenantProvider');
-//     }
-//     return context;
-// };
-
 TenantProvider.propTypes = {
   children: PropTypes.node.isRequired,
 };
-export const useTenantsAuths = () => useContext(TenantContext);
+
+// Create and export useTenantsAuths hook
+export const useTenantsAuths = () => {
+  const context = useContext(TenantContext);
+  if (!context) {
+    throw new Error('useTenantsAuths must be used within a TenantProvider');
+  }
+  return context;
+};
+
+export default TenantContext;

@@ -1,6 +1,7 @@
 import { createContext, useContext, useState, useEffect } from "react";
 import PropTypes from "prop-types";
 import { DUMMY_USERS } from "../data/dummyUsers"
+
 // Create AuthContext
 const AuthContext = createContext();
 

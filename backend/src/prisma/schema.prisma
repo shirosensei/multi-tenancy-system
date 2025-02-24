@@ -14,43 +14,97 @@ generator client {
 }
 
 model Tenant {
+  id                 String              @id @default(auto()) @map("_id") @db.ObjectId
+  name               String
+  domain             String @unique
+  email              String @unique
+  password           String
+  createdAt          DateTime            @default(now())
+  updatedAt          DateTime            @updatedAt
+  tenantUsage        TenantUsage?
+  tenantConfig       TenantConfig?
+  tenantSubscription TenantSubscription?
+  auditLogs          AuditLog[]
+  users              User[]
+  posts              Post[]
+}
+
+model TenantUsage {
   id        String   @id @default(auto()) @map("_id") @db.ObjectId
-  name      String
-  domain    String?
+  tenantId  String   @unique @db.ObjectId
+  dataUsage Int
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  tenant    Tenant   @relation(fields: [tenantId], references: [id])
+}
+
+model TenantConfig {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  tenantId    String   @unique @db.ObjectId
+  configName  String
+  configValue String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  tenant      Tenant   @relation(fields: [tenantId], references: [id])
+
+  @@unique([tenantId, configName])
+}
+
+model TenantSubscription {
+  id                    String   @id @default(auto()) @map("_id") @db.ObjectId
+  tenantId              String   @unique @db.ObjectId
+  subscriptionType      String
+  subscriptionStatus    String
+  subscriptionStartDate DateTime
+  subscriptionEndDate   DateTime
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+  tenant                Tenant   @relation(fields: [tenantId], references: [id])
+}
+
+model AuditLog {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  tenantId  String   @db.ObjectId
+  action    String
+  details   String
+  createdAt DateTime @default(now())
+  tenant    Tenant   @relation(fields: [tenantId], references: [id])
+
+  @@index([tenantId, createdAt])
 }
 
 model User {
   id        String   @id @default(auto()) @map("_id") @db.ObjectId
-  email     String   @unique
-  user      String   @unique
+  email     String
+  username  String
+  password  String
   name      String?
-  tenantId  String // Tenant isolation field
-  roleId    String   @db.ObjectId // Role management
-  role      Role     @relation(fields: [roleId], references: [id])
+  tenantId  String   @db.ObjectId
+  role      String
   gender    String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  @@index([tenantId, email])
-}
+  tenant Tenant @relation(fields: [tenantId], references: [id])
+  posts  Post[] // Add relation to posts
 
-model Role {
-  id        String   @id @default(auto()) @map("_id") @db.ObjectId
-  name      String   @unique
-  users     User[]
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  @@unique([tenantId, email])
+  @@unique([tenantId, username])
+  @@index([tenantId])
 }
 
 model Post {
   id        String   @id @default(auto()) @map("_id") @db.ObjectId
   title     String
   content   String?
-  tenantId  String // Tenant isolation field
+  tenantId  String   @db.ObjectId
+  authorId  String   @db.ObjectId // Add author relationship
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  tenant Tenant @relation(fields: [tenantId], references: [id])
+  author User   @relation(fields: [authorId], references: [id])
+
   @@index([tenantId, createdAt])
+  @@index([authorId])
 }

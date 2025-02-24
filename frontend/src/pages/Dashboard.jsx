@@ -2,14 +2,18 @@ import { useState, useEffect } from 'react';
 import { Box, Typography, Card, CardContent, Grid } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import TenantMetrics from '../components/TenantMetrics';
+import { useTenantsAuths } from '../contexts/tenantContext'; // Import the hook
 
 const Dashboard = () => {
     const [user, setUser] = useState({ name: 'John Doe', role: 'admin', email: 'john@example.com' });
     const [tenantData, setTenantData] = useState([]); // Initialize tenantData as an empty array
+    const [loading, setLoading] = useState(true); // Add loading state
     const navigate = useNavigate();
+    const { tenant, tenants, refreshTenants } = useTenantsAuths();
 
     useEffect(() => {
         const fetchData = () => {
+            // Simulate fetching tenant data
             const data = [
                 {
                     tenantName: "Tenant A",
@@ -31,11 +35,16 @@ const Dashboard = () => {
                 }
             ];
             setTenantData(data);
+            setLoading(false); // Set loading to false after data is fetched
         };
-    
+
         fetchData();
     }, []);
 
+    // Handle undefined tenant or tenants
+    if (!tenant || !tenants) {
+        return <Typography variant="h6">Loading tenant data...</Typography>;
+    }
 
     return (
         <Box sx={{ p: 4 }}>
@@ -47,11 +56,8 @@ const Dashboard = () => {
                     <Card>
                         <CardContent>
                             <Typography variant="h5">Active Users</Typography>
-                            {/* Only run reduce if tenantData is not empty */}
                             <Typography variant="body2">
-                                {tenantData.length > 0
-                                    ? tenantData.reduce((sum, tenant) => sum + tenant.activeUsers, 0)
-                                    : 'Loading...'} Users
+                                {loading ? 'Loading...' : tenantData.reduce((sum, tenant) => sum + tenant.activeUsers, 0)} Users
                             </Typography>
                         </CardContent>
                     </Card>
@@ -62,9 +68,7 @@ const Dashboard = () => {
                         <CardContent>
                             <Typography variant="h5">Total Posts</Typography>
                             <Typography variant="body2">
-                                {tenantData.length > 0
-                                    ? tenantData.reduce((sum, tenant) => sum + tenant.totalPosts, 0)
-                                    : 'Loading...'} Posts
+                                {loading ? 'Loading...' : tenantData.reduce((sum, tenant) => sum + tenant.totalPosts, 0)} Posts
                             </Typography>
                         </CardContent>
                     </Card>
@@ -75,9 +79,7 @@ const Dashboard = () => {
                         <CardContent>
                             <Typography variant="h5">Storage Used</Typography>
                             <Typography variant="body2">
-                                {tenantData.length > 0
-                                    ? tenantData.reduce((sum, tenant) => sum + tenant.storageUsed, 0)
-                                    : 'Loading...'} GB
+                                {loading ? 'Loading...' : tenantData.reduce((sum, tenant) => sum + tenant.storageUsed, 0)} GB
                             </Typography>
                         </CardContent>
                     </Card>
@@ -96,7 +98,7 @@ const Dashboard = () => {
 
             {/* Tenant Metrics Section */}
             <Box sx={{ mt: 4 }}>
-                <TenantMetrics tenantData={tenantData || []} />
+                <TenantMetrics tenantData={tenantData} />
             </Box>
         </Box>
     );

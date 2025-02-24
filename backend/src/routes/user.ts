@@ -1,13 +1,13 @@
 import { Router } from 'express';
 import { createUser, getUsers } from '../controllers/userController';
 import { requireRole } from '../middleware/rbacMiddleware';
-import tenantResolver from '../middleware/tenantResolver';
 
 const router = Router();
 
-router.use(tenantResolver);
+// POST /users (admin only)
+router.post('/users', requireRole('admin'), createUser);
 
-router.post('/', requireRole('admin'), createUser);
-router.get('/', requireRole('viewer'), getUsers);
+// GET /users (viewer only)
+router.get('/users', requireRole('viewer'), getUsers);
 
 export default router;

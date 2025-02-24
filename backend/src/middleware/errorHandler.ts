@@ -1,36 +1,31 @@
 import { Request, Response, NextFunction } from 'express';
-import { Prisma } from '@prisma/client';
-import { ZodError } from 'zod';
-import logger from '../utils/logger'; // Import the logger
+import { z } from 'zod';
+import logger from '../utils/logger';
 
 export const errorHandler = (
   err: Error,
   req: Request,
   res: Response,
   next: NextFunction
-): Response | undefined => {
+) => {
   // Log the error
-  logger.error(`Error: ${err.message}`, { stack: err.stack });
-
-  if (err instanceof ZodError) {
-    return res.status(400).json({
-      type: 'Validation Error',
-      errors: err.errors,
-    });
-  }
-
-  if (err instanceof Prisma.PrismaClientKnownRequestError) {
-    return res.status(400).json({
-      type: 'Database Error',
-      code: err.code,
-      meta: err.meta,
-    });
-  }
-
-  res.status(500).json({
-    type: 'Internal Server Error',
-    message: process.env.NODE_ENV === 'production'
-      ? 'Something went wrong'
-      : err.message,
+  logger.error(`Error: ${err.message}`, {
+    stack: err.stack, // Include stack trace for debugging
+    request: {
+      method: req.method,
+      url: req.url,
+      headers: req.headers,
+    },
   });
+
+  // Handle Zod validation errors
+  if (err instanceof z.ZodError) {
+     res.status(400).json({ errors: err.errors });
+     return;
+  }
+
+  // Default error response
+  res.status(500).json({ error: 'Internal server error' });
 };
+
+export default errorHandler;

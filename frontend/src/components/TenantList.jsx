@@ -110,3 +110,6 @@ const TenantList = () => {
     </React.Fragment>
   );
 };
+
+
+export default TenantList;

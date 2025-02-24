@@ -1,22 +1,38 @@
 import express, { Application, Request, Response } from "express";
+import errorHandler from './middleware/errorHandler';
 import postRouter from './routes/post';
 import tenantRouter from './routes/tenant';
+import userRouter from './routes/user';
 import rateLimit from 'express-rate-limit';
 import  tenantResolver  from './middleware/tenantResolver';
 import tenantContext from './middleware/tenantContext'; 
-import { errorHandler } from "./middleware/errorHandler";
 import logger from './utils/logger'; 
+import cors from 'cors';
 
+// import proxy_url = meta.import.meta.env.VITE_API_URL;
 
 const app: Application = express();
 
+// CORS configuration
+app.use(
+  cors({
+    origin: '*',
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+    allowedHeaders: 'Content-Type,Authorization',
+  })
+);
+
+// Parse JSON bodies
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
 
 // Log incoming requests
 app.use((req, res, next) => {
   logger.info(`Incoming request: ${req.method} ${req.url}`);
   next();
 });
+
 
 export const tenantRateLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
@@ -35,17 +51,13 @@ app.use(tenantContext);
 app.use(tenantRateLimiter);
 
 // Routes
-app.use('/posts', postRouter);
-app.use('/tenants', tenantRouter);
 
-app.use((err: Error, req: Request, res: Response, next: express.NextFunction) => {
-  errorHandler(err, req, res, next);
-});
+app.use('/auth', tenantRouter);
+app.use('/auth', userRouter);
+app.use('/auth', postRouter);
 
 // Error handler 
-app.use((err: Error, req: Request, res: Response) => {
-    res.status(500).json({ error: 'Internal server error' });
-  });
+app.use(errorHandler)
 
 
 const port = process.env.PORT || 3000;

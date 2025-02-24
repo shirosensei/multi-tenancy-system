@@ -1,45 +1,90 @@
-# multi-tenancy-system
+# Multi-Tenant Application System
+
+A scalable multi-tenant system application utilizing role-based access control (RBAC), with MongoDB sharding and a tenant management dashboard. 
 
 
-A scalable multi-tenant SaaS system with MongoDB sharding and a tenant management dashboard. 
+## Features
+- Multi-Tenant Architecture
+- RBAC middleware for secure role management
+- MongoDB Sharding for scalability
+- Tenant-specific dashboard and subscription management
+- User activity tracking
+
 
 ## Technologies
 
-React
+React + Vite
 Express
 Prisma
+Mongodb
+Material UI
+Tailwind CSS
+Node.js
+JWT
 
-multi-tenancy-system/  
-├── backend/  
-│   ├── src/  
-│   │   ├── middleware/          # Tenant resolution, auth, etc.  
-│   │   ├── controllers/        # API logic (tenant CRUD, metrics)  
-│   │   ├── services/           # Business logic (sharding, caching)  
-│   │   ├── utils/              # Helpers (database connectors, Redis)  
-│   │   ├── prisma/             # Prisma schema, migrations  
-│   │   └── app.js              # Express app setup  
-│   ├── config/                 # Environment variables  
-│   ├── tests/                  # Integration/unit tests  
-│   ├── .env.example            # Template for environment variables  
-│   └── package.json  
-│  
-├── frontend/  
-│   ├── public/  
-│   ├── src/  
-│   │   ├── components/         # Reusable UI (TenantList, MetricsChart)  
-│   │   ├── pages/              # Dashboard, TenantCreate, TenantEdit  
-│   │   ├── services/           # API calls to backend  
-│   │   ├── contexts/           # Auth/tenant context (if using React)  
-│   │   ├── assets/             # Images, styles  
-│   │   └── App.js              # Main app component  
-│   ├── tests/                  # UI unit/integration tests  
-│   └── package.json  
-│  
-├── .github/  
-│   └── workflows/              # CI/CD pipelines (see below)  
-│  
-├── docker/                     # Dockerfiles for backend/frontend  
-├── docs/                       # API docs, architecture diagrams  
-├── .gitignore  
-├── README.md                   # Project overview, setup instructions  
-└── docker-compose.yml          # Local dev setup (optional)  
+backend/
+└── src/
+    ├── controllers/
+    │   ├── postController.js
+    │   ├── tenantAuthController.js
+    │   ├── tenantController.js
+    │   └── userController.js
+    ├── middlewares/
+    │   ├── rbacMiddleware.js
+    │   ├── identifyTenant.js
+    │   ├── identifyTenantByDomain.js
+    │   └── tenantMiddleware.js
+    ├── prisma/
+    │   └── schema.prisma
+    ├── routes/
+    │   ├── tenantRoutes.js
+    │   └── userRoutes.js
+    ├── types/
+    │   └── tenantTypes.js
+    ├── utils/
+    │   └── helpers.js
+    └── server.js
+
+
+frontend/
+└── src/
+    ├── components/
+    │   ├── subscription/
+    │   ├── userActivity/
+    │   ├── sidebar/
+    │   ├── tenantForm/
+    │   ├── tenantList/
+    │   └── tenantMetrics/
+    ├── context/
+    │   ├── authContext.js
+    │   ├── tenantContext.js
+    │   └── userContext.js
+    ├── layout/
+    │   ├── Sidebar.js
+    │   └── Navbar.js
+    ├── middleware/
+    │   └── authorize.js
+    ├── pages/
+    │   ├── dashboard.js
+    │   ├── login.js
+    │   ├── signup.js
+    │   ├── subscription.js
+    │   ├── tenantDetail.js
+    │   ├── userActivityPage.js
+    │   └── service.js
+    ├── api/
+    │   └── apiService.js
+    ├── App.js
+    ├── main.js
+    └── theme.js
+
+## Setup Instructions
+- Clone the repository and navigate to both `frontend/` and `backend/` directories to set up both parts.
+- Follow the setup instructions in both the `frontend/README.md` and `backend/README.md` for installation and configuration.
+
+## Running the Application
+- Ensure the backend is running by starting the server in `backend/`.
+- Start the frontend app using `npm run dev` in `frontend/`.
+
+This project is designed to scale efficiently and securely with role-based access control and multi-tenant capabilities.
+

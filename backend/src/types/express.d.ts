@@ -1,24 +1,13 @@
-import { Request } from "express";
+import { Tenant } from './tenant'; // Import the Tenant interface
+import 'express'; 
 
-export interface Tenant {
-  id: string;
-  name: string;
-  domain?: string | null;
-  createdAt?: Date;
-  updatedAt?: Date;
-}
 
 declare global {
   namespace Express {
     interface Request {
-      user?: Record<string, any>;
-      tenant?: Tenant;
+      user?: Record<string, any>; // Add user property
+      tenant?: Tenant; // Add tenant property
     }
-    
-    interface Response {
-      json(data: any): Response;
-    }      
   }
 }
-
-export {}; 
+export { }

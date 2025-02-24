@@ -1,6 +1,9 @@
 import { Request, Response } from "express";
 import prisma from "../utils/prisma"; // Local Prisma client instance
 
+export interface Tenant {
+  tenant: string;
+}
 
 export const createPost = async (
   req: Request,
@@ -18,8 +21,6 @@ export const createPost = async (
        return
     }
 
-    // const tenantId = req.tenant!.domain;
-
     const post = await prisma.post.create({
       data: { title, tenantId: req.tenant.domain },
       // data: { title, tenantId: req.tenant!.domain },
@@ -27,7 +28,7 @@ export const createPost = async (
 
   
 
-    res.json(post);
+    res.status(200).json(post);
   } catch (error) {
     res.status(500).json({ error: "Failed to create post" });
   }
@@ -50,7 +51,7 @@ export const getPosts = async (
       where: { tenantId: req.tenant!.domain },
       select: { id: true, title: true },
     });
-    res.json(posts);
+    res.status(200).json(posts);
   } catch (error) {
     res.status(500).json({
       error: "Faied to fetch posts",

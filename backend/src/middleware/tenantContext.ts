@@ -3,10 +3,10 @@ import prisma from '../utils/prisma';
 
 
  const tenantContext = (req: Request, res: Response, next: NextFunction) => {
-  const tenantId = req.tenant?.id; // Assuming tenant is attached to request
+  const tenantId = (req as any).tenantId;  // Assuming tenant is attached to request
 
   if (!tenantId) {
-     res.status(400).json({ error: 'Tenant not resolved' });
+   res.status(400).json({ error: 'Tenant ID is missing' });
      return;
   }
 

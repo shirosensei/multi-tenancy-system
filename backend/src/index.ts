@@ -3,12 +3,20 @@ import postRouter from './routes/post';
 import tenantRouter from './routes/tenant';
 import rateLimit from 'express-rate-limit';
 import  tenantResolver  from './middleware/tenantResolver';
-import tenantContext from './middleware/tenantContext'; // Ensure this path is correct or create the module if it doesn't exist
+import tenantContext from './middleware/tenantContext'; 
+import { errorHandler } from "./middleware/errorHandler";
+import logger from './utils/logger'; 
+
 
 const app: Application = express();
 
 app.use(express.json());
 
+// Log incoming requests
+app.use((req, res, next) => {
+  logger.info(`Incoming request: ${req.method} ${req.url}`);
+  next();
+});
 
 export const tenantRateLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
@@ -29,6 +37,10 @@ app.use(tenantRateLimiter);
 // Routes
 app.use('/posts', postRouter);
 app.use('/tenants', tenantRouter);
+
+app.use((err: Error, req: Request, res: Response, next: express.NextFunction) => {
+  errorHandler(err, req, res, next);
+});
 
 // Error handler 
 app.use((err: Error, req: Request, res: Response) => {

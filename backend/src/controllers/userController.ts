@@ -7,6 +7,7 @@ const createUserSchema = z.object({
     name: z.string().optional(),
     roleId: z.string().regex(/^[0-9a-fA-F]{24}$/),
     gender: z.enum(['male', 'female', 'other'])
+    
 });
 
 export const createUser = async (req: Request, res: Response) => {

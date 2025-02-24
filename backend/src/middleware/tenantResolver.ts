@@ -1,46 +1,55 @@
 import { Request, Response, NextFunction } from 'express';
 import prisma from '../utils/prisma';
-import { Tenant } from '@prisma/client';
+
+
+const tenantResolver = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    let tenantId: string | undefined = (req as any).tenantId;
+    let decoded: any = (req as any).userId;
 
 
 
- const tenantResolver = async (
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ) => {
-    try {
+    if (!tenantId) {
       const host = req.headers.host;
+
       if (!host) {
-         res.status(400).json({ error: 'Host header required' });
-         return
+        res.status(400).json({ error: 'Host header required' });
+        return
       }
-  
+
+
       const subdomain = host.split('.')[0];
       if (!subdomain) {
-         res.status(400).json({ error: 'Invalid subdomain format' });
-         return
+        res.status(400).json({ error: 'Invalid subdomain format' });
+        return
       }
-  
+
       const tenant = await prisma.tenant.findUnique({
-        where: { domain: subdomain, id: '' },
-        select: { id: true, name: true, domain: true, createdAt: true, updatedAt: true }
+        where: { domain: subdomain },
+        select: { id: true }
       });
-  
+
       if (!tenant) {
-         res.status(404).json({ error: 'Tenant not found' });
-         return
+        res.status(404).json({ error: 'Tenant not found' });
+        return
       }
-      
-      // Attach tenant to request and Prisma context
-      req.tenant = tenant;
-  
-    //   on to the next middleware
-      next();
-    } catch (error) {
-      next(error);
+
+      tenantId = tenant.id;
+
+      (req as any).userId = decoded.userId;
+      (req as any).tenantId = decoded.tenantId;
     }
-  };
+
+    //   on to the next middleware
+    next();
+  } catch (error) {
+    next(error);
+  }
+};
 
 
-  export default tenantResolver; 
+export default tenantResolver; 

@@ -1,15 +1,14 @@
 # Multi-Tenant Application System
 
-A scalable multi-tenant system application utilizing role-based access control (RBAC), with MongoDB sharding and a tenant management dashboard. 
-
+A scalable multi-tenant system application utilizing role-based access control (RBAC), with MongoDB sharding and a tenant management dashboard.
 
 ## Features
+
 - Multi-Tenant Architecture
 - RBAC middleware for secure role management
 - MongoDB Sharding for scalability
 - Tenant-specific dashboard and subscription management
 - User activity tracking
-
 
 ## Technologies
 
@@ -45,7 +44,6 @@ backend/
     │   └── helpers.js
     └── server.js
 
-
 frontend/
 └── src/
     ├── components/
@@ -79,12 +77,13 @@ frontend/
     └── theme.js
 
 ## Setup Instructions
+
 - Clone the repository and navigate to both `frontend/` and `backend/` directories to set up both parts.
 - Follow the setup instructions in both the `frontend/README.md` and `backend/README.md` for installation and configuration.
 
 ## Running the Application
+
 - Ensure the backend is running by starting the server in `backend/`.
 - Start the frontend app using `npm run dev` in `frontend/`.
 
 This project is designed to scale efficiently and securely with role-based access control and multi-tenant capabilities.
-

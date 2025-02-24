@@ -14,33 +14,28 @@ const dummyUsers = [
  const TenantDetail = () => {
 
   const [user, setUser] = useState({ name: 'John Doe', role: 'admin', email: 'john@example.com' });
+  
+
+  const [tenant, setTenant] = useState(null);
   const navigate = useNavigate();
+
 
   const handleLogout = () => {
     navigate('/login'); // Redirect to login on logout
   };
 
 
-  const [tenant, setTenant] = useState(null);
-
   useEffect(() => {
-    axios.get(dummyUsers).then((response) => {
-      console.log(response.data);
-      setTenant(response.data);
-    });
+    // axios.get(dummyUsers).then((response) => {
+    //   console.log(response.data);
+    //   setTenant(response.data);
+    // });
+    setUser(dummyUsers)
+    setTenant(dummyUsers);
   }, []);
 
   return (
-    // <div>
-    //   {tenant ? (
-    //     <div>
-    //       <h1>{tenant.name}</h1>
-    //       <p>{tenant.email}</p>
-    //     </div>
-    //   ) : (
-    //     <p>Loading...</p>
-    //   )}
-    // </div>
+
         <Container maxWidth="md" className="mt-8">
       <Typography variant="h4" className="mb-4">Welcome, {user.name}</Typography>
       <Typography variant="h6">Role: {user.role}</Typography>
@@ -60,14 +55,20 @@ const dummyUsers = [
                 </TableRow>
               </TableHead>
               <TableBody>
-                {dummyUsers.map((user) => (
-                  <TableRow key={user.id}>
-                    <TableCell>{user.id}</TableCell>
-                    <TableCell>{user.name}</TableCell>
-                    <TableCell>{user.email}</TableCell>
-                    <TableCell>{user.role}</TableCell>
+                {tenant ? (
+                  tenant.map((user) => (
+                    <TableRow key={user.id}>
+                      <TableCell>{user.id}</TableCell>
+                      <TableCell>{user.name}</TableCell>
+                      <TableCell>{user.email}</TableCell>
+                      <TableCell>{user.role}</TableCell>
+                    </TableRow>
+                  ))
+                ) : (
+                  <TableRow>
+                    <TableCell colSpan={4} align="center">Loading...</TableCell>
                   </TableRow>
-                ))}
+                )}
               </TableBody>
             </Table>
           </TableContainer>

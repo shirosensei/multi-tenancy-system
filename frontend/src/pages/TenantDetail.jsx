@@ -1,42 +1,53 @@
 import axios from 'axios';
 import { useEffect, useState } from 'react';
 import { Container, Typography, Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper } from '@mui/material';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 
-const dummyUsers = [
-  { id: 1, name: 'Alice Johnson', email: 'alice@example.com', role: 'admin' },
-  { id: 2, name: 'Bob Smith', email: 'bob@example.com', role: 'user' },
-  { id: 3, name: 'Charlie Brown', email: 'charlie@example.com', role: 'user' }
-];
-
-
-
- const TenantDetail = () => {
-
+const TenantDetail = () => {
   const [user, setUser] = useState({ name: 'John Doe', role: 'admin', email: 'john@example.com' });
-  
-
   const [tenant, setTenant] = useState(null);
+  const [users, setUsers] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
   const navigate = useNavigate();
-
+  const { tenantId } = useParams(); // Get tenantId from the URL
 
   const handleLogout = () => {
+    
     navigate('/login'); // Redirect to login on logout
   };
 
-
   useEffect(() => {
-    // axios.get(dummyUsers).then((response) => {
-    //   console.log(response.data);
-    //   setTenant(response.data);
-    // });
-    setUser(dummyUsers)
-    setTenant(dummyUsers);
-  }, []);
+    const fetchTenantDetails = async () => {
+      try {
+        // Fetch tenant details
+        const tenantResponse = await axios.get(`/tenants/${tenantId}`);
+        setTenant(tenantResponse.data);
+
+        // Fetch users for the tenant
+        const usersResponse = await axios.get(`/tenants/${tenantId}/users`);
+        setUsers(usersResponse.data);
+      } catch (err) {
+        setError('Failed to fetch tenant details');
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchTenantDetails();
+  }, [tenantId]);
+
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
+  if (error) {
+    return <div>Error: {error}</div>;
+  }
 
   return (
-
-        <Container maxWidth="md" className="mt-8">
+    <Container maxWidth="md" className="mt-8">
       <Typography variant="h4" className="mb-4">Welcome, {user.name}</Typography>
       <Typography variant="h6">Role: {user.role}</Typography>
       <Typography variant="h6">Email: {user.email}</Typography>
@@ -55,20 +66,14 @@ const dummyUsers = [
                 </TableRow>
               </TableHead>
               <TableBody>
-                {tenant ? (
-                  tenant.map((user) => (
-                    <TableRow key={user.id}>
-                      <TableCell>{user.id}</TableCell>
-                      <TableCell>{user.name}</TableCell>
-                      <TableCell>{user.email}</TableCell>
-                      <TableCell>{user.role}</TableCell>
-                    </TableRow>
-                  ))
-                ) : (
-                  <TableRow>
-                    <TableCell colSpan={4} align="center">Loading...</TableCell>
+                {users.map((user) => (
+                  <TableRow key={user.id}>
+                    <TableCell>{user.id}</TableCell>
+                    <TableCell>{user.name}</TableCell>
+                    <TableCell>{user.email}</TableCell>
+                    <TableCell>{user.role}</TableCell>
                   </TableRow>
-                )}
+                ))}
               </TableBody>
             </Table>
           </TableContainer>

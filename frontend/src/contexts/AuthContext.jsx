@@ -23,9 +23,9 @@ export const AuthProvider = ({ children }) => {
             const response = await axios.post(`${import.meta.env.VITE_API_URL}/tenant/login`, { email, password });
         
             if (response.data.success) {
-              const {  token } = response.data;
+              const { token, tenantId } = response.data; 
               // Save the user and token to localStorage or in state
-              // localStorage.setItem("user", JSON.stringify(user));
+              localStorage.setItem("tenantId", tenantId);
               localStorage.setItem("token", token);
               return true; // User successfully logged in
             } else {

@@ -20,9 +20,9 @@ const TenantForm = ({ open, onClose, tenant }) => {
   const mutation = useMutation(
     async (data) => {
       if (tenant) {
-        return api.put(`/tenants/${tenant.id}`, data); // Update existing tenant
+        return api.put(`${import.meta.env.VITE_API_URL}/tenants/${tenant.id}`, data); // Update existing tenant
       }
-      return api.post("/tenants", data); // Create new tenant
+      return api.post(`${import.meta.env.VITE_API_URL}/tenants`, data); // Create new tenant
     },
     {
       onSuccess: () => {

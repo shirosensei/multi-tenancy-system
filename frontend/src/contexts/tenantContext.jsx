@@ -11,7 +11,7 @@ export const TenantProvider = ({ children }) => {
         setLoading(true);
         try {
             // Simulate fetching tenant data from an API
-            const response = await fetch(`${import.meta.env.REACT_APP_API_URL}/tenants/${tenantId}`);
+            const response = await fetch(`${import.meta.env.VITE_API_URL}/tenants/${tenantId}`);
             if (!response.ok) {
                 throw new Error('Failed to fetch tenant data');
             }

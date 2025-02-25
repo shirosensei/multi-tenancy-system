@@ -20,7 +20,7 @@ export const AuthProvider = ({ children }) => {
     const login = async  (email, password) => {
         // Simulate a login request
         try {
-            const response = await axios.post(`${import.meta.env._API_URL}/tenant/login`, { email, password });
+            const response = await axios.post(`${import.meta.env.VITE_API_URL}/tenant/login`, { email, password });
         
             if (response.data.success) {
               const {  token } = response.data;

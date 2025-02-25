@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import  { useState } from "react";
 import { TextField, Button, Typography, Container, Box, Card, CardContent, CircularProgress } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
@@ -31,7 +31,7 @@ const AuthPage = () => {
                 if (password !== confirmPassword) {
                     throw new Error("Passwords do not match");
                 }
-                await signup({ username, name, email, password, tenantId: "your-tenant-id" }); // Replace "your-tenant-id" with the actual tenant ID
+                await signup({ username, name, email, password, tenantId: "your-tenant-id" }); 
                 navigate("/dashboard"); // Redirect to dashboard after signup
             }
         } catch (err) {

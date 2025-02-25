@@ -19,6 +19,9 @@ router.post('/tenant/login', tenantLogin);
 // Protected route using JWT claims
 router.get('/tenant/data', authenticate, identifyTenant);
 
+// Fetch tenant details
+// router.get('/tenants/:tenantId', authenticate,)
+
 
 // Protected route using subdomain
 router.get('/tenant/data/subdomain', authenticate, identifyTenantBySubdomain);

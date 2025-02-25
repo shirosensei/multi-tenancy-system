@@ -55,7 +55,7 @@ app.use(tenantRateLimiter);
 
 // Routes
 
-app.use('/', tenantRouter);
+app.use('/api', tenantRouter);
 app.use('/auth', userRouter);
 app.use('/auth', postRouter);
 

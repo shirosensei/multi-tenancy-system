@@ -3,7 +3,7 @@ import { verifyToken } from '../utils/jwt';
 import logger from '../utils/logger';
 import { TypedRequestBody, TypedRequestParams, TypedRequestQuery } from 'src/types/express';
 import prisma from '../utils/prisma';
-
+import { setAuthCookie } from '../middleware/setAuthCookie';
 
 export const identifyTenant = async <T>(req: TypedRequestBody<T> | TypedRequestQuery<T> | TypedRequestParams<T>, res: Response, next: NextFunction): Promise<void> => {
   const authHeader = req.headers.authorization;
@@ -23,6 +23,10 @@ export const identifyTenant = async <T>(req: TypedRequestBody<T> | TypedRequestQ
   }
 
   try {
+
+        // Set the cookie
+        setAuthCookie(res, token);
+        
     const decoded = verifyToken(token) as { tenantId: string; domain: string };
 
      

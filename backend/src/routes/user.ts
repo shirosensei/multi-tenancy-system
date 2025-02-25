@@ -8,6 +8,6 @@ const router = Router();
 router.post('/users', requireRole('admin'), createUser);
 
 // GET /users (viewer only)
-router.get('/users', requireRole('viewer'), getUsers);
+router.get('/users', requireRole('user'), getUsers);
 
 export default router;

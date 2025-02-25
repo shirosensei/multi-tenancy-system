@@ -1,46 +1,44 @@
-import React, { createContext, useState, useContext } from 'react';
+import  { createContext, useState, useContext } from 'react';
 import PropTypes from 'prop-types';
-import { DUMMY_USERS } from "../data/dummyUsers";
 
-// Create TenantContext
 const TenantContext = createContext();
 
 export const TenantProvider = ({ children }) => {
-  const [tenants, setTenants] = useState([]);
-  const [tenant, setTenant] = useState(null);
-  const [loading, setLoading] = useState(false);
+    const [tenant, setTenant] = useState(null); // Current tenant
+    const [loading, setLoading] = useState(false);
 
-  const refreshTenants = async (email, password) => {
-    try {
-      const foundTenant = DUMMY_USERS.find(user => user.email === email && user.password === password);
+    const fetchTenantData = async (tenantId) => {
+        setLoading(true);
+        try {
+            // Simulate fetching tenant data from an API
+            const response = await fetch(`${import.meta.env.REACT_APP_API_URL}/tenants/${tenantId}`);
+            if (!response.ok) {
+                throw new Error('Failed to fetch tenant data');
+            }
+            const data = await response.json();
+            setTenant(data);
+        } catch (error) {
+            console.error('Error fetching tenant data:', error);
+        } finally {
+            setLoading(false);
+        }
+    };
 
-      if (foundTenant) {
-        setTenants([foundTenant]);
-        setTenant(foundTenant); // Set the tenant
-      }
-    } catch (error) {
-      console.error('Failed to fetch tenants:', error);
-    }
-  };
-
-  return (
-    <TenantContext.Provider value={{ tenants, tenant, refreshTenants, loading }}>
-      {children}
-    </TenantContext.Provider>
-  );
+    return (
+        <TenantContext.Provider value={{ tenant, fetchTenantData, loading }}>
+            {children}
+        </TenantContext.Provider>
+    );
 };
 
 TenantProvider.propTypes = {
-  children: PropTypes.node.isRequired,
+    children: PropTypes.node.isRequired,
 };
 
-// Create and export useTenantsAuths hook
 export const useTenantsAuths = () => {
-  const context = useContext(TenantContext);
-  if (!context) {
-    throw new Error('useTenantsAuths must be used within a TenantProvider');
-  }
-  return context;
+    const context = useContext(TenantContext);
+    if (!context) {
+        throw new Error('Tenant must be used within a TenantProvider');
+    }
+    return context;
 };
-
-export default TenantContext;

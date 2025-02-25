@@ -1,15 +1,14 @@
-import { Navigate, Outlet  } from 'react-router-dom';
+import { Navigate, Outlet } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
-import { useTenantsAuths } from '../contexts/tenantContext'
+import { useTenantsAuths } from '../contexts/tenantContext';
 import PropTypes from 'prop-types';
 
 const PrivateRoute = ({ children, allowedRoles }) => {
   const { user } = useAuth();
-
   const { tenant } = useTenantsAuths();
 
-  // Redirect to login if user is not authenticated
-  if (!user) {
+  // Redirect to login if user or tenant is not authenticated
+  if (!user || !tenant) {
     return <Navigate to="/login" replace />;
   }
 
@@ -18,18 +17,14 @@ const PrivateRoute = ({ children, allowedRoles }) => {
     return <Navigate to="/login" replace />;
   }
 
-
-
   return children ? children : <Outlet />;
 };
 
-
 PrivateRoute.propTypes = {
-  children: PropTypes.node.isRequired,
-  allowedRoles: PropTypes.string.isRequired,
+  children: PropTypes.node,
+  allowedRoles: PropTypes.arrayOf(PropTypes.string),
 };
 
-// Default Props
 PrivateRoute.defaultProps = {
   children: null,
   allowedRoles: [],

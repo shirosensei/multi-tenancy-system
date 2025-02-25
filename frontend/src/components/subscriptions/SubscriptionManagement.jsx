@@ -4,7 +4,7 @@ import api from '../../services/api'; // API utility
 
 const SubscriptionManagement = () => {
   const { data: subscriptions, isLoading, error } = useQuery(['subscriptions'], async () => {
-    const response = await api.get('/subscriptions'); // Fetch subscriptions
+    const response = await api.get(`${import.meta.env.VITE_API_URL}/subscriptions`); // Fetch subscriptions
     return response.data;
   });
 
@@ -17,10 +17,15 @@ const SubscriptionManagement = () => {
       {subscriptions.map((sub) => (
         <Card key={sub.id} sx={{ mb: 2 }}>
           <CardContent>
-            <Typography variant="h6">{sub.tenant.name}</Typography>
-            <Typography>Plan: {sub.plan}</Typography>
-            <Typography>Start: {new Date(sub.startDate).toLocaleDateString()}</Typography>
-            <Typography>End: {new Date(sub.endDate).toLocaleDateString()}</Typography>
+            <Typography variant="h6" sx={{ fontWeight: 'bold' }}>{sub.tenant.name}</Typography>
+            <Typography>Plan: {sub.subscriptionType}</Typography>
+            <Typography sx={{ color: sub.subscriptionStatus === 'Active' ? 'green' : 'red' }}>Status: {sub.subscriptionStatus}</Typography>
+            <Typography>
+              Start: {new Date(sub.subscriptionStartDate).toLocaleDateString()}
+            </Typography>
+            <Typography>
+              End: {new Date(sub.subscriptionEndDate).toLocaleDateString()}
+            </Typography>
           </CardContent>
         </Card>
       ))}

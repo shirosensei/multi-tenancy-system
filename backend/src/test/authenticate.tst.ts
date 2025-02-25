@@ -1,8 +1,8 @@
 // src/tests/authenticate.test.ts
 import request from 'supertest';
 import express from 'express';
-import { authenticate } from '../src/middleware/authenticate';
-import { verifyToken } from '../src/utils/jwt';
+import { authenticate } from '../middleware/authenticate';
+import { verifyToken } from '../utils/jwt';
 
 // Mock the verifyToken function
 jest.mock('../utils/jwt');

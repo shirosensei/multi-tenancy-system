@@ -1,99 +1,66 @@
 import { useState, useEffect } from 'react';
 import { Box, Typography, Card, CardContent, Grid } from '@mui/material';
-import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../contexts/AuthContext';
+import { useTenantsAuths } from '../contexts/tenantContext';
 import TenantMetrics from '../components/TenantMetrics';
-import { useTenantsAuths } from '../contexts/tenantContext'; // Import the hook
 
 const Dashboard = () => {
-    const [user, setUser] = useState({ name: 'John Doe', role: 'admin', email: 'john@example.com' });
-    const [tenantData, setTenantData] = useState([]); // Initialize tenantData as an empty array
-    const [loading, setLoading] = useState(true); // Add loading state
-    const navigate = useNavigate();
-    const { tenant, tenants, refreshTenants } = useTenantsAuths();
+    const { user, loading: userLoading } = useAuth();
+    const { tenant, fetchTenantData, loading: tenantLoading } = useTenantsAuths();
+    const [tenantData, setTenantData] = useState([]);
+    const [error, setError] = useState(null);
 
     useEffect(() => {
-        const fetchData = () => {
-            // Simulate fetching tenant data
+        if (user && user.tenantId) {
+            fetchTenantData(user.tenantId); // Fetch tenant data based on user's tenantId
+        }
+    }, [user, fetchTenantData]);
+
+    useEffect(() => {
+        if (tenant) {
+            // Simulate fetching tenant-specific metrics
             const data = [
                 {
-                    tenantName: "Tenant A",
-                    activeUsers: 120,
-                    totalPosts: 500,
-                    storageUsed: 350,
+                    metric: "Active Users",
+                    value: tenant.activeUsers || 0,
                 },
                 {
-                    tenantName: "Tenant B",
-                    activeUsers: 80,
-                    totalPosts: 300,
-                    storageUsed: 200,
+                    metric: "Total Posts",
+                    value: tenant.totalPosts || 0,
                 },
                 {
-                    tenantName: "Tenant C",
-                    activeUsers: 150,
-                    totalPosts: 700,
-                    storageUsed: 450,
-                }
+                    metric: "Storage Used",
+                    value: tenant.storageUsed || 0,
+                },
             ];
             setTenantData(data);
-            setLoading(false); // Set loading to false after data is fetched
-        };
+        }
+    }, [tenant]);
 
-        fetchData();
-    }, []);
+    if (userLoading || tenantLoading) {
+        return <Typography variant="h6">Loading...</Typography>;
+    }
 
-    // Handle undefined tenant or tenants
-    if (!tenant || !tenants) {
-        return <Typography variant="h6">Loading tenant data...</Typography>;
+    if (!user || !tenant) {
+        return <Typography variant="h6">Please log in to view the dashboard.</Typography>;
     }
 
     return (
         <Box sx={{ p: 4 }}>
-            <Typography variant="h4">Welcome, {user.name}</Typography>
+            <Typography variant="h4">Welcome, {user.email}</Typography>
+            <Typography variant="subtitle1">Tenant: {tenant.name}</Typography>
 
             <Grid container spacing={4} sx={{ mt: 4 }}>
-                {/* Quick Stats */}
-                <Grid item xs={12} sm={6} md={3}>
-                    <Card>
-                        <CardContent>
-                            <Typography variant="h5">Active Users</Typography>
-                            <Typography variant="body2">
-                                {loading ? 'Loading...' : tenantData.reduce((sum, tenant) => sum + tenant.activeUsers, 0)} Users
-                            </Typography>
-                        </CardContent>
-                    </Card>
-                </Grid>
-
-                <Grid item xs={12} sm={6} md={3}>
-                    <Card>
-                        <CardContent>
-                            <Typography variant="h5">Total Posts</Typography>
-                            <Typography variant="body2">
-                                {loading ? 'Loading...' : tenantData.reduce((sum, tenant) => sum + tenant.totalPosts, 0)} Posts
-                            </Typography>
-                        </CardContent>
-                    </Card>
-                </Grid>
-
-                <Grid item xs={12} sm={6} md={3}>
-                    <Card>
-                        <CardContent>
-                            <Typography variant="h5">Storage Used</Typography>
-                            <Typography variant="body2">
-                                {loading ? 'Loading...' : tenantData.reduce((sum, tenant) => sum + tenant.storageUsed, 0)} GB
-                            </Typography>
-                        </CardContent>
-                    </Card>
-                </Grid>
-
-                {/* More Cards / Links */}
-                <Grid item xs={12} sm={6} md={3}>
-                    <Card>
-                        <CardContent>
-                            <Typography variant="h5">Manage Tenants</Typography>
-                            <Typography variant="body2">View and manage tenant settings</Typography>
-                        </CardContent>
-                    </Card>
-                </Grid>
+                {tenantData.map((metric, index) => (
+                    <Grid item xs={12} sm={6} md={3} key={index}>
+                        <Card>
+                            <CardContent>
+                                <Typography variant="h5">{metric.metric}</Typography>
+                                <Typography variant="body2">{metric.value}</Typography>
+                            </CardContent>
+                        </Card>
+                    </Grid>
+                ))}
             </Grid>
 
             {/* Tenant Metrics Section */}

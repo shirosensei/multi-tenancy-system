@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
+import { Routes, Route, Navigate } from "react-router-dom";
 import Dashboard from "./pages/Dashboard";
 import Login from "./pages/Login";
 import Layout from "./layout/Layout";
@@ -8,20 +8,14 @@ import SubscriptionPage from "./pages/SubscriptionPage";
 import PrivateRoute from "./middleware/authorize"; // Protecting admin-only pages
 import { useAuth } from "./contexts/AuthContext";
 import { useTenantsAuths } from "./contexts/tenantContext";
-import ErrorBoundary from "./ErrorBoundary"; 
 
 function App() {
-  const { user, loading: userLoading } = useAuth();
-  const { tenant, loading: tenantLoading } = useTenantsAuths();
+  const {  loading: userLoading } = useAuth();
+  const {  loading: tenantLoading } = useTenantsAuths();
 
   // Show loading state while checking authentication
   if (userLoading || tenantLoading) {
     return <div className="flex items-center justify-center h-screen">Loading...</div>;
-  }
-
-  // Redirect to login if user or tenant is not authenticated
-  if (!user || !tenant) {
-    return <Navigate to="/login" replace />; // Use Navigate within Router context
   }
 
   return (
@@ -29,7 +23,7 @@ function App() {
       {/* Public Route */}
       <Route path="/login" element={<Login />} />
 
-      {/* Protected Routes Inside Layout */}
+      {/* Protected Routes */}
       <Route
         path="/"
         element={

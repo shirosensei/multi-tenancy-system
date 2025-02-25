@@ -1,5 +1,5 @@
 import { beforeAll, afterAll } from '@jest/globals';
-import prisma from '../src/utils/prisma'; // Adjust the path to your Prisma client
+import prisma from '../utils/prisma'; // Adjust the path to your Prisma client
 
 // Run before all tests
 beforeAll(async () => {
@@ -12,3 +12,5 @@ afterAll(async () => {
   // Clean up test setup (e.g., close database connections)
   await prisma.$disconnect();
 });
+
+

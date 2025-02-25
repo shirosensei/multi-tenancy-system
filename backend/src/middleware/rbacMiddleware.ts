@@ -2,12 +2,12 @@ import { Request, Response, NextFunction } from 'express';
 import { TypedRequestBody, TypedRequestQuery, TypedRequestParams, ApiResponse, RoleResponse } from '../types/express';
 
 
-type Role = 'admin' | 'editor' | 'viewer' | 'guest';
+type Role = 'admin' | 'editor' | 'user' | 'guest';
 
 const roleHierarchy = new Map<Role, number>([
   ['admin', 3],
   ['editor', 2],
-  ['viewer', 1],
+  ['user', 1],
   ['guest', 0],
 ]);
 

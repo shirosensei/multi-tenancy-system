@@ -4,7 +4,7 @@ import api from '../../services/api'; // API call utility
 
 const UserActivity = () => {
   const { data: activities, isLoading, error } = useQuery(['activities'], async () => {
-    const response = await api.get('/audit-logs'); // Fetch audit logs
+    const response = await api.get(`${api}/data`); // Fetch audit logs
     return response.data;
   });
 

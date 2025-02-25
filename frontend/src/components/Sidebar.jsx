@@ -19,58 +19,32 @@ import Business from "@mui/icons-material/Business";
 
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
+import { useTenantsAuths } from "../contexts/tenantContext";
 import { useState } from "react";
+
 
 const Sidebar = () => {
   const navigate = useNavigate();
-  const { user, logout } = useAuth(); // Get user role
   const [loading, setLoading] = useState(false);
+
+  const { user: adminUser, logout: adminLogout } = useAuth(); // Admin Authentication
+const { user: tenantUser, logout: tenantLogout } = useTenantsAuths(); // Tenant Authentication
+
+// Determine the current user (Admin or Tenant)
+const user = adminUser || tenantUser;
+const logout = adminUser ? adminLogout : tenantLogout;
+
 
   if (!user) return null; // Don't show sidebar if user is not logged in
 
   const menuItems = [
-    {
-      text: "Dashboard",
-      icon: <Dashboard />,
-      path: "/",
-      roles: ["admin", "user"],
-    },
-    {
-      text: "Users",
-      icon: <AccountCircle />,
-      path: "/users",
-      roles: ["admin"],
-    },
-    {
-      text: "Tenants",
-      icon: <Business />, // Use BusinessIcon or ApartmentIcon if you prefer
-      path: "/tenants",
-      roles: ["admin", "editor"], // Only Admin & Editor can manage tenants
-    },
-    {
-      text: "Analytics",
-      icon: <PieChart />,
-      path: "/analytics",
-      roles: ["admin", "user"],
-    },
-    {
-      text: "User Activity",
-      icon: <ListAlt />,
-      path: "/activity-log",
-      roles: ["admin"],
-    },
-    {
-      text: "Subscriptions",
-      icon: <MonetizationOn />,
-      path: "/subscriptions",
-      roles: ["admin"],
-    },
-    {
-      text: "Settings",
-      icon: <Settings />,
-      path: "/settings",
-      roles: ["admin", "user"],
-    },
+    { text: "Dashboard", icon: <Dashboard />, path: "/", roles: ["admin", "user", "tenant"] },
+    { text: "Users", icon: <AccountCircle />, path: "/users", roles: ["admin"] },
+    { text: "Tenants", icon: <Business />, path: "/tenants", roles: ["admin", "editor"] },
+    { text: "Analytics", icon: <PieChart />, path: "/analytics", roles: ["admin", "user"] },
+    { text: "User Activity", icon: <ListAlt />, path: "/activity-log", roles: ["admin"] },
+    { text: "Subscriptions", icon: <MonetizationOn />, path: "/subscriptions", roles: ["admin"] },
+    { text: "Settings", icon: <Settings />, path: "/settings", roles: ["admin", "user", "tenant"] },
   ];
 
 
@@ -80,13 +54,19 @@ const Sidebar = () => {
       logout(); // Perform logout logic
 
       setTimeout(() => {
-          window.location.reload(); // Reload the page after 5 seconds
+        localStorage.removeItem("token"), 
+          window.location.assign("/login"); // Reload the page after 5 seconds
       }, 5000);
   };
 
 
   return (
-    <Drawer variant="permanent" className="w-60">
+    <Drawer variant="permanent" sx={{
+      width: { xs: 0, sm: 200, md: 250 }, // 0 on mobile, 200px on tablet, 250px on desktop
+      flexShrink: 0,
+      display: { xs: "none", sm: "block" }, // Hide on mobile
+      "& .MuiDrawer-paper": { width: { sm: 200, md: 250 } },
+    }}>
       <List className="pt-4">
         {menuItems
           .filter((item) => item.roles.includes(user?.role))

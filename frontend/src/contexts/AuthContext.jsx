@@ -1,11 +1,9 @@
 import { createContext, useContext, useState, useEffect } from "react";
 import PropTypes from "prop-types";
-import { DUMMY_USERS } from "../data/dummyUsers"
+import axios from "axios";
 
-// Create AuthContext
 const AuthContext = createContext();
 
-// AuthProvider Component
 export const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(null); // Stores logged-in user
     const [loading, setLoading] = useState(true);
@@ -19,50 +17,50 @@ export const AuthProvider = ({ children }) => {
         setLoading(false);
     }, []);
 
-    // Dummy login function
-    const login = (email, password) => {
+    const login = async  (email, password) => {
         // Simulate a login request
-        const foundUser = DUMMY_USERS.find((u) => u.email === email && u.password === password);
-        if (foundUser) {
-            setUser(foundUser);
-            localStorage.setItem("user", JSON.stringify(foundUser));
-            return true;
-        }
-        return false;
-    };
-
-    // Signup function
-    const signup = async ({ username, name, email, password, tenantId }) => {
         try {
-            // Simulate a signup request
-            const response = await fetch("/api/signup", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ username, name, email, password, tenantId }),
-            });
-
-            if (!response.ok) {
-                throw new Error("Signup failed");
+            const response = await axios.post(`${import.meta.env._API_URL}/tenant/login`, { email, password });
+        
+            if (response.data.success) {
+              const {  token } = response.data;
+              // Save the user and token to localStorage or in state
+              // localStorage.setItem("user", JSON.stringify(user));
+              localStorage.setItem("token", token);
+              return true; // User successfully logged in
+            } else {
+              console.error('Login failed:', response.data.message);
+              return false; // Login failed
             }
-
-            const newUser = await response.json();
-            setUser(newUser);
-            localStorage.setItem("user", JSON.stringify(newUser));
-            return true;
-        } catch (error) {
-            console.error("Signup error:", error);
-            throw error;
-        }
+          } catch (error) {
+            console.error('Login error:', error);
+            return false; // Handle login error
+          }
+        // return false;
     };
 
-    // Logout function
+    // const logout = () => {
+    //     setUser(null);
+    //     localStorage.removeItem("user");
+    // };
+
+
     const logout = () => {
-        setUser(null);
+        // Remove user and token from localStorage
         localStorage.removeItem("user");
-    };
+        localStorage.removeItem("token");
+        // Optionally, call the API to invalidate the session
+        axios.post(`${import.meta.env._API_URL}/tenant/logout`)
+          .then(response => {
+            console.log(response.data.message);
+          })
+          .catch(error => {
+            console.error('Logout error:', error);
+          });
+      };
 
     return (
-        <AuthContext.Provider value={{ user, login, signup, logout, loading }}>
+        <AuthContext.Provider value={{ user, login, logout, loading }}>
             {children}
         </AuthContext.Provider>
     );
@@ -72,5 +70,4 @@ AuthProvider.propTypes = {
     children: PropTypes.node.isRequired,
 };
 
-// Hook to use auth context
 export const useAuth = () => useContext(AuthContext);

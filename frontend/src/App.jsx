@@ -13,6 +13,8 @@ function App() {
   const {  loading: userLoading } = useAuth();
   const {  loading: tenantLoading } = useTenantsAuths();
 
+
+
   // Show loading state while checking authentication
   if (userLoading || tenantLoading) {
     return <div className="flex items-center justify-center h-screen">Loading...</div>;

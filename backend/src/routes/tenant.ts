@@ -3,7 +3,8 @@ import { createTenant } from '../controllers/tenantController';
 import { tenantLogin } from '../controllers/tenantAuthController';
 import { identifyTenant } from "../middleware/identifyTenant"
 import { identifyTenantBySubdomain } from '../middleware/identifyTenantBySubdomain';
-import { ApiResponse, TypedRequestBody, TypedRequestParams, TypedRequestQuery } from '../types/express';
+import { authenticate } from '../middleware/authenticate';
+
 
 const router = Router();
 
@@ -12,19 +13,15 @@ const router = Router();
 router.post('/tenant/register', createTenant);
 
 
-router.get('/tenant/data', identifyTenant);
-
-
 // Tenant login route
 router.post('/tenant/login', tenantLogin);
 
-
 // Protected route using JWT claims
-router.get('/tenant/data', identifyTenant);
+router.get('/tenant/data', authenticate, identifyTenant);
 
 
 // Protected route using subdomain
-router.get('/tenant/data/subdomain', identifyTenantBySubdomain);
+router.get('/tenant/data/subdomain', authenticate, identifyTenantBySubdomain);
 
 
 

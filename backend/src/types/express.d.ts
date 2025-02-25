@@ -1,12 +1,12 @@
 // src/types/express.d.ts
-import { Request } from 'express';
+import { Request, Response } from 'express';
 import { Tenant, User, Post, TenantUsage, TenantConfig, TenantSubscription } from '@prisma/client';
 
 
 
-type SanitizedTenant = Omit<Tenant, 'password'>;
-type SanitizedUser = Omit<User, 'password'>;
-type SanitizedConfig = Omit<TenantConfig, 'configValue'>;
+export type SanitizedTenant = Omit<Tenant, 'password'>;
+export type SanitizedUser = Omit<User, 'password'>;
+export type SanitizedConfig = Omit<TenantConfig, 'configValue'>;
 
 declare global {
   namespace Express {
@@ -93,11 +93,21 @@ export interface ApiResponse<T> {
   success: boolean;
   data?: T;
   error?: string;
+  status?: string;
   pagination?: {
     page: number;
     limit: number;
     total: number;
   };
+}
+
+export interface CustomJwtPayload {
+  tenantId: string;
+  name: string;
+  domain: string;
+  email: string;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 export { }

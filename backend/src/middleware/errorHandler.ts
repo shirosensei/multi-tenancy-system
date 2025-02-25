@@ -11,6 +11,13 @@ export const errorHandler = (
   // Log the error
   logger.error(`Error: ${err.message}`, {
     stack: err.stack, // Include stack trace for debugging
+    message: err.message,
+  path: req.originalUrl,
+  method: req.method,
+  ip: req.ip,
+  userAgent: req.get('User-Agent'),
+  requestBody: req.body, // Log request body if necessary (ensure to sanitize in production)
+  queryParams: req.query,
     request: {
       method: req.method,
       url: req.url,
@@ -24,6 +31,23 @@ export const errorHandler = (
      return;
   }
 
+
+
+  // Handle specific known errors, like Database or Unauthorized errors
+  if (err.name === 'MongoError') {
+    logger.error('MongoDB Error', { error: err.message });
+     res.status(500).json({ error: 'Database error occurred' });
+     return;
+  }
+
+  if (err.name === 'UnauthorizedError') {
+    logger.warn('Unauthorized Access', { path: req.originalUrl, user: req.user });
+     res.status(401).json({ error: 'Unauthorized access' });
+     return;
+  }
+
+
+  logger.error('Internal Server Error', { error: err.message });
   // Default error response
   res.status(500).json({ error: 'Internal server error' });
 };

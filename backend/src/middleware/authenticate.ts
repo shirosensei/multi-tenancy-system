@@ -11,8 +11,6 @@ export const authenticate = (
 )  => {
   const authHeader = req.headers.authorization;
 
-  console.log('req.tenant:', req.tenant);
-
   if (!authHeader || !authHeader.startsWith("Bearer ")) {
     logger.warn("Unauthorized: Missing or invalid authorization header");
      res.status(401).json({ success: false, error: "Unauthorized" });
@@ -37,9 +35,6 @@ export const authenticate = (
       createdAt: Date;
       updatedAt: Date;
     };
-
-    console.log('JWT Payload:', decoded);
-
 
     req.tenant = {
       domain: decoded.domain,

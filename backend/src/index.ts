@@ -8,6 +8,7 @@ import  tenantResolver  from './middleware/tenantResolver';
 import tenantContext from './middleware/tenantContext'; 
 import logger from './utils/logger'; 
 import cors from 'cors';
+import { authenticate } from './middleware/authenticate'; 
 
 // import proxy_url = meta.import.meta.env.VITE_API_URL;
 
@@ -34,12 +35,6 @@ app.use((req, res, next) => {
 });
 
 
-export const tenantRateLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100, // Limit each tenant to 100 requests per window
-  message: 'Too many requests from this tenant'
-});
-
 
 // Tenant Resolver for header based tenant resolution 
 app.use(tenantResolver); 
@@ -47,12 +42,20 @@ app.use(tenantResolver);
 // Middleware to set Prisma context
 app.use(tenantContext);
 
+
+// Rate Limit
+export const tenantRateLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100, // Limit each tenant to 100 requests per window
+  message: 'Too many requests from this tenant'
+});
+
 // Rate Limiter
 app.use(tenantRateLimiter);
 
 // Routes
 
-app.use('/auth', tenantRouter);
+app.use('/', tenantRouter);
 app.use('/auth', userRouter);
 app.use('/auth', postRouter);
 

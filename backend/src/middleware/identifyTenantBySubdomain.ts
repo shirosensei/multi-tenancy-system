@@ -1,18 +1,19 @@
 import { Request, Response, NextFunction } from 'express';
 import prisma from '../utils/prisma';
 import logger from '../utils/logger';
-import { TypedRequestBody, TypedRequestParams, TypedRequestQuery } from '../types/express';
+import { ApiResponse, TypedRequestBody, TypedRequestParams, TypedRequestQuery } from '../types/express';
 
 export const identifyTenantBySubdomain = async <T>(
   req: TypedRequestBody<T> | TypedRequestQuery<T> | TypedRequestParams<T>,
-  res: Response,
+  res: Response<ApiResponse<any>>,
   next: NextFunction
-): Promise<void> => {
+) => {
   const host = req.headers.host;
+  console.log('host', host);
 
   if (!host) {
     logger.warn('Host header is missing');
-     res.status(400).json({ error: 'Host header is required' });
+     res.status(400).json({ success: false, error: 'Host header is required' });
      return;
   }
 
@@ -21,7 +22,7 @@ export const identifyTenantBySubdomain = async <T>(
 
   if (!subdomain) {
     logger.warn('Invalid subdomain format');
-     res.status(400).json({ error: 'Invalid subdomain format' });
+     res.status(400).json({ success: false, error: 'Invalid subdomain format' });
      return;
   }
 
@@ -63,7 +64,7 @@ export const identifyTenantBySubdomain = async <T>(
 
     if (!tenant) {
       logger.warn(`Tenant not found for subdomain: ${subdomain}`);
-       res.status(404).json({ error: 'Tenant not found' });
+       res.status(404).json({ success: false, error: 'Tenant not found' });
        return;
     }
 
@@ -89,6 +90,6 @@ export const identifyTenantBySubdomain = async <T>(
     } else {
       logger.error('Error identifying tenant by subdomain');
     }
-    res.status(500).json({ error: 'Internal server error' });
+    res.status(500).json({ success: false, error: 'Internal server error' });
   }
 };

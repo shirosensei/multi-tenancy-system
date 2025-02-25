@@ -1,6 +1,6 @@
 import prisma from '../utils/prisma';
 import { Request, Response } from "express";
-import { z } from 'zod';
+import { string, z } from 'zod';
 import { hashPassword } from '../utils/bcrypt';
 import logger from '../utils/logger';
 import { CustomJwtPayload, SanitizedTenant } from '../types/express'; // Update the path
@@ -13,6 +13,7 @@ const createTenantSchema = z.object({
   email: z.string().email('Invalid email address'),
   password: z.string().min(6, 'Password must be at least 6 characters'),
 });
+
 
 export const createTenant = async (
   req: Request,
@@ -61,7 +62,8 @@ export const createTenant = async (
         email: newTenant.email,
         createdAt: newTenant.createdAt,
         updatedAt: newTenant.updatedAt, 
-    }
+    },
+
     });
 
   } catch (error) {

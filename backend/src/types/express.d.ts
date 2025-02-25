@@ -94,6 +94,7 @@ export interface ApiResponse<T> {
   data?: T;
   error?: string;
   status?: string;
+  token?: string;
   pagination?: {
     page: number;
     limit: number;

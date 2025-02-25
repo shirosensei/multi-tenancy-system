@@ -1,6 +1,7 @@
 import jwt, { SignOptions } from 'jsonwebtoken';
 
 import logger from './logger';
+import { CustomJwtPayload } from '../types/express';
 
 const JWT_SECRET: string = process.env.JWT_SECRET || 'default-secret';
 
@@ -10,16 +11,18 @@ if (!JWT_SECRET) {
 
 interface JwtPayload {
   tenantId: string;
+  email: string;
   domain: string;
   role?: string;
   [key: string]: any; // Allow additional properties
 }
 
+
 type ExpiresIn = '1h' | '2h' | '1d' | '7d' | number;
 
 
 // Generate a JWT token
-export const generateToken = (payload: JwtPayload, expiresIn: ExpiresIn = '1h') => {
+export const generateToken = (payload: CustomJwtPayload, expiresIn: ExpiresIn = '1h') => {
   const options: SignOptions = { expiresIn };
 
   if (!payload || typeof payload !== 'object') {
@@ -31,10 +34,11 @@ export const generateToken = (payload: JwtPayload, expiresIn: ExpiresIn = '1h') 
 
 
 
+
 // Verify a JWT token
-export const verifyToken = (token: string): JwtPayload => {
+export const verifyToken = (token: string): CustomJwtPayload => {
   try {
-    const decoded = jwt.verify(token, JWT_SECRET) as JwtPayload;
+    const decoded = jwt.verify(token, JWT_SECRET) as CustomJwtPayload;
 
     // Runtime validation
     if (!decoded.tenantId || !decoded.domain) {

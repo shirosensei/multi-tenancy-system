@@ -4,7 +4,7 @@ import { Container, Typography, Button, Table, TableBody, TableCell, TableContai
 import { useNavigate, useParams } from 'react-router-dom';
 
 const TenantDetail = () => {
-  const [user, setUser] = useState({ name: 'John Doe', role: 'admin', email: 'john@example.com' });
+  const [user, setUser] = useState([]);
   const [tenant, setTenant] = useState(null);
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -13,30 +13,60 @@ const TenantDetail = () => {
   const { tenantId } = useParams(); // Get tenantId from the URL
 
   const handleLogout = () => {
-    
+
     navigate('/login'); // Redirect to login on logout
   };
 
+
+
   useEffect(() => {
-    const fetchTenantDetails = async () => {
-      try {
-        // Fetch tenant details
-        const tenantResponse = await axios.get(`/tenants/${tenantId}`);
-        setTenant(tenantResponse.data);
+    
+    const apiUr = import.meta.env.VITE_API_URL;
 
-        // Fetch users for the tenant
-        const usersResponse = await axios.get(`/tenants/${tenantId}/users`);
-        setUsers(usersResponse.data);
-      } catch (err) {
-        setError('Failed to fetch tenant details');
-        console.error(err);
-      } finally {
-        setLoading(false);
-      }
-    };
+  const fetchTenantDetails = async () => {
+    const token = localStorage.getItem("token");
+    const tenantId = localStorage.getItem("tenantId");
 
+    if (!tenantId || !token) {
+      console.error("Tenant ID or Token is missing");
+      return;
+    }
+
+
+    try {
+      // Fetch tenant details
+      const tenantResponse = await axios.get(`${apiUr}/tenants/data/${tenantId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "x-tenant-id": tenantId,
+        },
+      });
+
+      setTenant(tenantResponse.data);
+
+      // Fetch users for the tenant (with headers)
+      const usersResponse = await axios.get(`${apiUr}/auth/users/${tenantId}/`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "x-tenant-id": tenantId,
+        },
+      });
+
+      setUsers(usersResponse.data);
+    } catch (err) {
+      setError("Failed to fetch tenant details");
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if(user?.role === "admin") {
     fetchTenantDetails();
-  }, [tenantId]);
+  }
+}, [user])
+
+
 
   if (loading) {
     return <div>Loading...</div>;

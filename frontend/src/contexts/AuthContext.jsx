@@ -39,10 +39,11 @@ export const AuthProvider = ({ children }) => {
         // return false;
     };
 
-    // const logout = () => {
-    //     setUser(null);
-    //     localStorage.removeItem("user");
-    // };
+    const signup = async ({ username, domain, name, email, password, tenantId }) => {
+      const response = await axios.post(`${import.meta.env.VITE_API_URL}/api/tenant/register`, { username, name, email, password, domain, tenantId });
+      setUser(response.data.user);
+      localStorage.setItem("token", response.data.token);
+  };
 
 
     const logout = () => {
@@ -60,7 +61,7 @@ export const AuthProvider = ({ children }) => {
       };
 
     return (
-        <AuthContext.Provider value={{ user, login, logout, loading }}>
+        <AuthContext.Provider value={{ user, login, logout, signup, loading }}>
             {children}
         </AuthContext.Provider>
     );

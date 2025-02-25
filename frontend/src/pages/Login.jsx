@@ -226,7 +226,7 @@ const LoginPage = () => {
                         animation: `${bounce} 2s infinite`,
                     }}
                 >
-                    <img src={Logo} alt="Logo" width={150} height={100} style={{ borderRadius: "50%" }} />
+                    <img src={Logo} alt="Logo" width={100} height={100} style={{ borderRadius: "50%" }} />
                 </Box>
 
                 {/* Card for the Login Form */}

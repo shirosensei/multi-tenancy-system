@@ -38,6 +38,7 @@ export const createTenant = async (
     const newTenant = await prisma.tenant.create({
       data: {
         name,
+        // tenantId,
         domain: subdomain,
         email,
         password: hashedPassword,

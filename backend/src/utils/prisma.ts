@@ -7,7 +7,7 @@ export interface Context {
 }
 
 
-prisma.$use(async (params, next) => {
+prisma.$use(async (params: Prisma.MiddlewareParams, next: (params: Prisma.MiddlewareParams) => Promise<any>) => {
   const { args, model, action } = params;
   const operation = params.action;
   const context: Context | undefined = params.args?.context;
